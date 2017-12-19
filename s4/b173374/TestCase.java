@@ -37,9 +37,12 @@ public class TestCase {
 	    System.out.println("checking s4.b173374.Frequencer");
 	    myObject = new s4.b173374.Frequencer();
 	    myObject.setSpace("Hi Ho Hi Ho".getBytes());
-	    myObject.setTarget("H".getBytes());
+	    //myObject.setTarget("H".getBytes());
+	    //テスト TARGETが0の場合
+	    myObject.setTarget("".getBytes());
+	    
 	    freq = myObject.frequency();
-	    System.out.print("\"H\" in \"Hi Ho Hi Ho\" appears "+freq+" times. ");
+	    System.out.print("\"\" in \"Hi Ho Hi Ho\" appears "+freq+" times. ");
 	    if(4 == freq) { System.out.println("OK"); } else {System.out.println("WRONG"); }
 	}
 	catch(Exception e) {

@@ -32,6 +32,7 @@ public class Frequencer implements FrequencerInterface{
 	    }
 	    if(abort == false) { count++; }
 	}
+	if (targetLength == 0)count = -1;
 	return count;
     }
 

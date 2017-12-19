@@ -80,6 +80,7 @@ public class InformationEstimator implements InformationEstimatorInterface{
 	    // Get the minimal value in "value"
 	    if(value1 < value) value = value1;
 	}
+	if (myTarget.length == 0)value = 0.0;
 	return value;
     }
 

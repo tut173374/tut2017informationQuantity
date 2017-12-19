@@ -55,7 +55,7 @@ public class TestCase {
 	    System.out.println("checking s4.b173374.InformationEstimator");
 	    myObject = new s4.b173374.InformationEstimator();
 	    myObject.setSpace("3210321001230123".getBytes());
-	    myObject.setTarget("0".getBytes());
+	    myObject.setTarget("".getBytes());
 	    value = myObject.estimation();
 	    System.out.println(">0 "+value);
 	    myObject.setTarget("01".getBytes());

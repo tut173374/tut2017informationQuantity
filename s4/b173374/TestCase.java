@@ -38,7 +38,7 @@ public class TestCase {
 	    myObject = new s4.b173374.Frequencer();
 	    myObject.setSpace("Hi Ho Hi Ho".getBytes());
 	    //myObject.setTarget("H".getBytes());
-	    //テスト TARGETが0の場合
+	    //テスト TARGETが""の場合
 	    myObject.setTarget("".getBytes());
 	    
 	    freq = myObject.frequency();
@@ -55,9 +55,11 @@ public class TestCase {
 	    System.out.println("checking s4.b173374.InformationEstimator");
 	    myObject = new s4.b173374.InformationEstimator();
 	    myObject.setSpace("3210321001230123".getBytes());
+	    //myObject.setTarget("0".getBytes());
+	    //テスト TARGETが""の場合
 	    myObject.setTarget("".getBytes());
 	    value = myObject.estimation();
-	    System.out.println(">0 "+value);
+	    System.out.println(">"+value);
 	    myObject.setTarget("01".getBytes());
 	    value = myObject.estimation();
 	    System.out.println(">01 "+value);

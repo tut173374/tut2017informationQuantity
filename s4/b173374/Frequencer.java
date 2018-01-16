@@ -75,13 +75,12 @@ public class Frequencer implements FrequencerInterface{
     }
 
     private int targetCompare(int i, int start, int end){
-	//siは”HI Ho Hi Ho”の開始位置を記憶
+	//siは”HI Ho Hi Ho”の開始位置を記憶 
 	int si = suffixArray[i];
 	int tse = end - start;
 	if(tse > mySpace.length - si) return -1;
 	int n = tse;
 	for(int	k = 0; k < n; k++){
-	    //System.out.println("OK4");
 	    if(mySpace[si+k] > myTarget[start+k]) return 1;
 	    if(mySpace[si+k] < myTarget[start+k]) return -1;
 	}
@@ -93,7 +92,6 @@ public class Frequencer implements FrequencerInterface{
 	for (i = 0; i < mySpace.length; i++){
 	    if (targetCompare(i,start,end) == 0) return i;
 	}
-	//System.out.println("OK1");
 	return suffixArray.length;	
     }
 
@@ -116,11 +114,8 @@ public class Frequencer implements FrequencerInterface{
 	    }
 	    if(abort == false) {count++;}
 	}
-	//System.out.println("OK");
 	int first = subByteStartIndex(start,end);
-	//System.out.println("OK2");
 	int last1 = subByteEndIndex(start,end);
-	//System.out.println("OK3");
      
 	//debug
 	for(int k = start; k < end; k++) {System.out.write(myTarget[k]);}
@@ -145,11 +140,11 @@ public class Frequencer implements FrequencerInterface{
 	try {
 	    frequencerObject = new Frequencer();
 	    frequencerObject.setSpace("Hi Ho Hi Ho".getBytes());
-	    frequencerObject.setTarget("o ".getBytes());
+	    frequencerObject.setTarget("H".getBytes());
 	    int result = frequencerObject.frequency();
 	    System.out.println("Freq = "+result+" ");
-	    /*if(4 == result) {System.out.println("OK");}
-	      else {System.out.println("WRONG");}*/
+	    if(4 == result) {System.out.println("OK");}
+	    else {System.out.println("WRONG");}
 	}
 	catch(Exception e){
 	    System.out.println("STOP");

@@ -3,16 +3,16 @@ import java.lang.*;
 import s4.specification.*;
 
 /*
-interface FrequencerInterface {     // This interface provides the design for frequency counter.
-    void setTarget(byte[]  target); // set the data to search.
-    void setSpace(byte[]  space);  // set the data to be searched target from.
-    int frequency(); //It return -1, when TARGET is not set or TARGET's length is zero
-                    //Otherwise, it return 0, when SPACE is not set or Space's length is zero
-                    //Otherwise, get the frequency of TAGET in SPACE
-    int subByteFrequency(int start, int end);
-    // get the frequency of subByte of taget, i.e target[start], taget[start+1], ... , target[end-1].
-    // For the incorrect value of START or END, the behavior is undefined.
-*/
+  interface FrequencerInterface {     // This interface provides the design for frequency counter.
+  void setTarget(byte[]  target); // set the data to search.
+  void setSpace(byte[]  space);  // set the data to be searched target from.
+  int frequency(); //It return -1, when TARGET is not set or TARGET's length is zero
+  //Otherwise, it return 0, when SPACE is not set or Space's length is zero
+  //Otherwise, get the frequency of TAGET in SPACE
+  int subByteFrequency(int start, int end);
+  // get the frequency of subByte of taget, i.e target[start], taget[start+1], ... , target[end-1].
+  // For the incorrect value of START or END, the behavior is undefined.
+  */
 
 
 public class Frequencer implements FrequencerInterface{
@@ -22,6 +22,9 @@ public class Frequencer implements FrequencerInterface{
     boolean targetReady	= false;
     boolean spaceReady	= false;
     int	[] suffixArray;
+    int	[] array;
+    int count=0;
+
 
     
     private void printSuffixArray() {
@@ -34,6 +37,18 @@ public class Frequencer implements FrequencerInterface{
 		System.out.write('\n');
 	    }
 	}
+    }    
+    private void printArray() {
+	if(spaceReady) {
+	    for(int i=0; i< mySpace.length; i++){
+		int s = array[i];
+		for(int	j=s;j<mySpace.length;j++){
+		    System.out.write(mySpace[j]);
+		}
+		System.out.write('\n');
+	    }
+	}
+	System.out.println("******");
     }
 
     private int suffixCompare(int i, int j){
@@ -51,33 +66,75 @@ public class Frequencer implements FrequencerInterface{
 	if(si >	sj) return -1;
 	return 0;
     }
+    int count2=0;
 
+    public void merge(int[] array1, int[] array2, int[] array){
+	int i=0, j=0;
+	while(i < array1.length || j < array2.length){
+	    if(j>=array2.length || (i<array1.length && suffixCompare(array1[i], array2[j]) == -1)){
+		array[i+j]=array1[i];
+		i++;
+	    }
+	    else{
+		array[i+j]=array2[j];
+		j++;
+	    }
+	    count2++;
+	}
+    }
+
+	
+    public void mergeSort(int[] array){
+	if(array.length>1){
+	    int m = array.length/2;
+	    int n = array.length-m;
+	    int[] array1 = new int[m];
+	    int[] array2 = new int[n];
+	    for(int i = 0; i < m; i++)array1[i]=array[i];
+	    for(int i = 0; i < n; i++)array2[i]=array[m+i];
+	    mergeSort(array1);
+	    mergeSort(array2);
+	    merge(array1, array2, array);
+	}
+    }
+   
     public void setSpace(byte []space) {
 	mySpace = space; if (mySpace.length>0) spaceReady = true;
 	suffixArray = new int[space.length];
+	array = new int[space.length];
 	for(int i = 0; i < space.length; i++){
 	    suffixArray[i] = i;
+	    array[i] = i;
 	}
+	printArray();
+
+	/**bubble sort****
+	   int count = 0;
+	   for (int i = 0; i < suffixArray.length - 1; i++) {
+	   for (int j = suffixArray.length - 1; j > i; j--) {
+	   if(suffixCompare(j-1,j) == 1) {
+	   int tmpNum = suffixArray[j - 1];
+	   suffixArray[j - 1] = suffixArray[j];
+	   suffixArray[j] = tmpNum;
+	   count++;
+	   }
+	   }
+	   }
+	********/
+	mergeSort(array);
+	suffixArray = array;
+
 	
-	//sort
-	int count = 0;
-        for (int i = 0; i < suffixArray.length - 1; i++) {
-            for (int j = suffixArray.length - 1; j > i; j--) {
-		if(suffixCompare(j-1,j) == 1) {
-                    int tmpNum = suffixArray[j - 1];
-                    suffixArray[j - 1] = suffixArray[j];
-                    suffixArray[j] = tmpNum;
-                    count++;
-                }
-            }
-        }
+
+
+	
 	printSuffixArray();
     }
 
     private int targetCompare(int i, int start, int end){
-	//siは”HI Ho Hi Ho”の開始位置を記憶 
+	//siは”Hi Ho Hi Ho”の開始位置を記憶 
 	int si = suffixArray[i];
-	int tse = end - start;
+	int tse = end - start;//target_start_end
 	if(tse > mySpace.length - si) return -1;
 	int n = tse;
 	for(int	k = 0; k < n; k++){
@@ -97,7 +154,6 @@ public class Frequencer implements FrequencerInterface{
 
     private int subByteEndIndex(int start, int end){
 	int i;
-	
 	for (i = mySpace.length - 1; i >= 0; i--){
 	    if (targetCompare(i,start,end) == 0 ) return i+1;
  	}
@@ -154,44 +210,44 @@ public class Frequencer implements FrequencerInterface{
 
 
 /*もともとのFrequencer*/
-    /*public void setTarget(byte [] target) { myTarget = target;}
-    public void setSpace(byte []space) { mySpace = space; }
-    public int frequency() {
-	int targetLength = myTarget.length;
-	int spaceLength = mySpace.length;
-	int count = 0;
-	for(int start = 0; start<spaceLength; start++) { // Is it OK?
-	    boolean abort = false;
-	    for(int i = 0; i<targetLength; i++) {
-		if(myTarget[i] != mySpace[start+i]) { abort = true; break; }
-	    }
-	    if(abort == false) { count++; }
-	}
-	if (targetLength == 0)count = -1;
-	return count;
-    }
+/*public void setTarget(byte [] target) { myTarget = target;}
+  public void setSpace(byte []space) { mySpace = space; }
+  public int frequency() {
+  int targetLength = myTarget.length;
+  int spaceLength = mySpace.length;
+  int count = 0;
+  for(int start = 0; start<spaceLength; start++) { // Is it OK?
+  boolean abort = false;
+  for(int i = 0; i<targetLength; i++) {
+  if(myTarget[i] != mySpace[start+i]) { abort = true; break; }
+  }
+  if(abort == false) { count++; }
+  }
+  if (targetLength == 0)count = -1;
+  return count;
+  }
 
-    // I know that here is a potential problem in the declaration.
-    public int subByteFrequency(int start, int length) { 
-	// Not yet, but it is not currently used by anyone.
-	return -1;
-    }
+  // I know that here is a potential problem in the declaration.
+  public int subByteFrequency(int start, int length) { 
+  // Not yet, but it is not currently used by anyone.
+  return -1;
+  }
 
-    public static void main(String[] args) {
-	Frequencer myObject;
-	int freq;
-	try {
-	    System.out.println("checking my Frequencer");
-	    myObject = new Frequencer();
-	    myObject.setSpace("Hi Ho Hi Ho".getBytes());
-	    myObject.setTarget("H".getBytes());
-	    freq = myObject.frequency();
-	    System.out.print("\"H\" in \"Hi Ho Hi Ho\" appears "+freq+" times. ");
-	    if(4 == freq) { System.out.println("OK"); } else {System.out.println("WRONG"); }
-	}
-	catch(Exception e) {
-	    System.out.println("Exception occurred: STOP");
-	}
-    }}	*/
+  public static void main(String[] args) {
+  Frequencer myObject;
+  int freq;
+  try {
+  System.out.println("checking my Frequencer");
+  myObject = new Frequencer();
+  myObject.setSpace("Hi Ho Hi Ho".getBytes());
+  myObject.setTarget("H".getBytes());
+  freq = myObject.frequency();
+  System.out.print("\"H\" in \"Hi Ho Hi Ho\" appears "+freq+" times. ");
+  if(4 == freq) { System.out.println("OK"); } else {System.out.println("WRONG"); }
+  }
+  catch(Exception e) {
+  System.out.println("Exception occurred: STOP");
+  }
+  }}	*/
     
 	    

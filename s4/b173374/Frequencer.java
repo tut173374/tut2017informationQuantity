@@ -31,6 +31,7 @@ public class Frequencer implements FrequencerInterface{
 	if(spaceReady) {
 	    for(int i=0; i< mySpace.length; i++){
 		int s = suffixArray[i];
+		System.out.print(String.format("%3d : ",i));
 		for(int	j=s;j<mySpace.length;j++){
 		    System.out.write(mySpace[j]);
 		}
@@ -38,18 +39,6 @@ public class Frequencer implements FrequencerInterface{
 	    }
 	}
     }    
-    private void printArray() {
-	if(spaceReady) {
-	    for(int i=0; i< mySpace.length; i++){
-		int s = array[i];
-		for(int	j=s;j<mySpace.length;j++){
-		    System.out.write(mySpace[j]);
-		}
-		System.out.write('\n');
-	    }
-	}
-	System.out.println("******");
-    }
 
     private int suffixCompare(int i, int j){
 	int si = suffixArray[i];
@@ -106,28 +95,22 @@ public class Frequencer implements FrequencerInterface{
 	    suffixArray[i] = i;
 	    array[i] = i;
 	}
-	printArray();
-
 	/**bubble sort****
-	   int count = 0;
-	   for (int i = 0; i < suffixArray.length - 1; i++) {
-	   for (int j = suffixArray.length - 1; j > i; j--) {
-	   if(suffixCompare(j-1,j) == 1) {
-	   int tmpNum = suffixArray[j - 1];
-	   suffixArray[j - 1] = suffixArray[j];
-	   suffixArray[j] = tmpNum;
-	   count++;
-	   }
-	   }
-	   }
-	********/
+	int count = 0;
+	for (int i = 0; i < suffixArray.length - 1; i++) {
+	    for (int j = suffixArray.length - 1; j > i; j--) {
+		if(suffixCompare(j-1,j) == 1) {
+		    int tmpNum = suffixArray[j - 1];
+		    suffixArray[j - 1] = suffixArray[j];
+		    suffixArray[j] = tmpNum;
+		    count++;
+		}
+	    }
+	}
+        **bubble sort****/
+	
 	mergeSort(array);
 	suffixArray = array;
-
-	
-
-
-	
 	printSuffixArray();
     }
 
@@ -135,29 +118,71 @@ public class Frequencer implements FrequencerInterface{
 	//siは”Hi Ho Hi Ho”の開始位置を記憶 
 	int si = suffixArray[i];
 	int tse = end - start;//target_start_end
-	if(tse > mySpace.length - si) return -1;
-	int n = tse;
-	for(int	k = 0; k < n; k++){
+	int min = (mySpace.length - si < tse) ? mySpace.length - si : tse;
+	for(int	k = 0; k < min; k++){
 	    if(mySpace[si+k] > myTarget[start+k]) return 1;
 	    if(mySpace[si+k] < myTarget[start+k]) return -1;
 	}
+	if(tse > mySpace.length - si) return -1;
 	return 0;
     }
 
     private int subByteStartIndex(int start, int end){
+	/******線形探索******
 	int i;
 	for (i = 0; i < mySpace.length; i++){
 	    if (targetCompare(i,start,end) == 0) return i;
 	}
+	*******線形探索*****/
+
+	//******二分探索******
+	int left = 0;
+	int right = mySpace.length - 1;
+	int center = (left + right) / 2;
+	do{
+	    center = (left + right) / 2;
+	    if(targetCompare(center, start, end) == -1){
+		left = center + 1;
+		//	    }else if(targetCompare(center, start, end) == 0){
+		//			right = center;
+	    }else{
+		right = center - 1;
+	    }
+	}while(left <= right);
+
+	if (targetCompare(center, start, end) == 0)return center;
+	if (targetCompare(center, start, end) == -1)return center + 1;
+	
 	return suffixArray.length;	
     }
 
     private int subByteEndIndex(int start, int end){
+	/*******線形探索*****
 	int i;
 	for (i = mySpace.length - 1; i >= 0; i--){
 	    if (targetCompare(i,start,end) == 0 ) return i+1;
  	}
 	return suffixArray.length;
+	*******線形探索*****/
+	//******二分探索******
+	int left = 0;
+	int right = mySpace.length - 1;
+	int center = (left + right) / 2;
+	do{
+	    center = (left + right) / 2;
+	    if(targetCompare(center, start, end) == 1){
+		right = center - 1;
+		//}else if(targetCompare(center, start, end) == 0){
+		//	left = center;
+	    }else{
+		left = center + 1;
+	    }
+	}while(left <= right);
+	//System.out.println("***left "+left+" right "+right+" center "+center+" start "+start+" end "+end);
+	if (targetCompare(center, start, end) == 0)return center + 1;
+	if (targetCompare(center, start, end) == 1)return center;
+	return suffixArray.length;
+	
     }
 
     public int subByteFrequency(int start, int end){
@@ -173,10 +198,10 @@ public class Frequencer implements FrequencerInterface{
 	int first = subByteStartIndex(start,end);
 	int last1 = subByteEndIndex(start,end);
      
-	//debug
+	//*debug*
 	for(int k = start; k < end; k++) {System.out.write(myTarget[k]);}
 	System.out.printf(" : first = %d last1 = %d \n", first, last1);
-	
+	//*******/
 	return last1-first;
     }
 

@@ -88,30 +88,32 @@ public class Frequencer implements FrequencerInterface{
     }
    
     public void setSpace(byte []space) {
-	mySpace = space; if (mySpace.length>0) spaceReady = true;
-	suffixArray = new int[space.length];
-	array = new int[space.length];
-	for(int i = 0; i < space.length; i++){
-	    suffixArray[i] = i;
-	    array[i] = i;
-	}
-	/**bubble sort****
-	int count = 0;
-	for (int i = 0; i < suffixArray.length - 1; i++) {
-	    for (int j = suffixArray.length - 1; j > i; j--) {
-		if(suffixCompare(j-1,j) == 1) {
-		    int tmpNum = suffixArray[j - 1];
-		    suffixArray[j - 1] = suffixArray[j];
-		    suffixArray[j] = tmpNum;
-		    count++;
-		}
+	if(space != null){
+	    mySpace = space; if (mySpace.length>0) spaceReady = true;
+	    suffixArray = new int[space.length];
+	    array = new int[space.length];
+	    for(int i = 0; i < space.length; i++){
+		suffixArray[i] = i;
+		array[i] = i;
 	    }
-	}
-        **bubble sort****/
+	    /**bubble sort****
+	       int count = 0;
+	       for (int i = 0; i < suffixArray.length - 1; i++) {
+	       for (int j = suffixArray.length - 1; j > i; j--) {
+	       if(suffixCompare(j-1,j) == 1) {
+	       int tmpNum = suffixArray[j - 1];
+	       suffixArray[j - 1] = suffixArray[j];
+	       suffixArray[j] = tmpNum;
+	       count++;
+	       }
+	       }
+	       }
+	    **bubble sort****/
 	
-	mergeSort(array);
-	suffixArray = array;
-	printSuffixArray();
+	    mergeSort(array);
+	    suffixArray = array;
+	    //printSuffixArray();
+	}
     }
 
     private int targetCompare(int i, int start, int end){
@@ -139,20 +141,18 @@ public class Frequencer implements FrequencerInterface{
 	int left = 0;
 	int right = mySpace.length - 1;
 	int center = (left + right) / 2;
+	if(targetCompare(left, start, end) == 0)return left;
 	do{
-	    center = (left + right) / 2;
 	    if(targetCompare(center, start, end) == -1){
-		left = center + 1;
-		//	    }else if(targetCompare(center, start, end) == 0){
-		//			right = center;
+		left = center;
 	    }else{
-		right = center - 1;
+		right = center;
 	    }
-	}while(left <= right);
+	    center = (left + right) / 2;
+	    if(left == center) return right;
+	}while(left < right);
 
-	if (targetCompare(center, start, end) == 0)return center;
-	if (targetCompare(center, start, end) == -1)return center + 1;
-	
+	//System.out.println("***left "+left+" right "+right+" center "+center+" start "+start+" end "+end);
 	return suffixArray.length;	
     }
 
@@ -168,19 +168,17 @@ public class Frequencer implements FrequencerInterface{
 	int left = 0;
 	int right = mySpace.length - 1;
 	int center = (left + right) / 2;
+	if(targetCompare(right, start, end) == 0)return mySpace.length ;
 	do{
-	    center = (left + right) / 2;
 	    if(targetCompare(center, start, end) == 1){
-		right = center - 1;
-		//}else if(targetCompare(center, start, end) == 0){
-		//	left = center;
+		right = center;
 	    }else{
-		left = center + 1;
+		left = center;
 	    }
-	}while(left <= right);
+	    center = (left + right) / 2;
+	    if(left == center) return right;
+	}while(left < right);
 	//System.out.println("***left "+left+" right "+right+" center "+center+" start "+start+" end "+end);
-	if (targetCompare(center, start, end) == 0)return center + 1;
-	if (targetCompare(center, start, end) == 1)return center;
 	return suffixArray.length;
 	
     }
@@ -198,18 +196,19 @@ public class Frequencer implements FrequencerInterface{
 	int first = subByteStartIndex(start,end);
 	int last1 = subByteEndIndex(start,end);
      
-	//*debug*
+	/***debug***
 	for(int k = start; k < end; k++) {System.out.write(myTarget[k]);}
 	System.out.printf(" : first = %d last1 = %d \n", first, last1);
-	//*******/
+	//***********/
 	return last1-first;
     }
 
     public void setTarget(byte [] target) {
-	myTarget = target;
-	if(myTarget.length > 0) targetReady = true;
+	if(target != null){
+	    myTarget = target;
+	    if(myTarget.length > 0) targetReady = true;
+	}
     }
-
     public int frequency() {
 	if(targetReady == false) return -1;
 	if(spaceReady == false) return 0;
@@ -221,7 +220,7 @@ public class Frequencer implements FrequencerInterface{
 	try {
 	    frequencerObject = new Frequencer();
 	    frequencerObject.setSpace("Hi Ho Hi Ho".getBytes());
-	    frequencerObject.setTarget("H".getBytes());
+	    frequencerObject.setTarget(null);
 	    int result = frequencerObject.frequency();
 	    System.out.println("Freq = "+result+" ");
 	    if(4 == result) {System.out.println("OK");}
